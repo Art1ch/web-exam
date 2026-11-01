@@ -1,0 +1,16 @@
+﻿@model TaskDeleteViewModel
+
+@{
+    ViewData["Title"] = "Delete task";
+}
+
+<h2>Delete employee</h2>
+
+<p>Are you sure you want to delete <strong>@Model.Name</strong>?</p>
+
+<form asp-action="DeleteConfirmed" asp-route-id="@Model.Id" method="post" class="form">
+    <div class="form-actions">
+        <button type="submit" class="btn btn-danger">Delete</button>
+        <a class="btn" asp-action="Index">Cancel</a>
+    </div>
+</form>

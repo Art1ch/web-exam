@@ -1,0 +1,108 @@
+﻿@model EmployeeIndexViewModel
+@{
+    ViewData["Title"] = "Employees";
+    var isFirstPage = Model.Pagination.Cursor is null;
+}
+
+<div class="page-header">
+    <h2>Employees</h2>
+    <a class="btn btn-primary" asp-action="Create">Create</a>
+</div>
+
+<form asp-action="Index" method="get" class="filters">
+    <input type="text" name="name" value="@Model.Filter.Name" placeholder="Name" />
+    <input type="number" name="fromAge" value="@Model.Filter.FromAge" placeholder="Age from" />
+    <input type="number" name="toAge" value="@Model.Filter.ToAge" placeholder="Age to" />
+    <input type="text" name="speciality" value="@Model.Filter.Speciality" placeholder="Speciality" />
+    <input type="date" name="fromEmploymentDate"
+           value="@Model.Filter.FromEmploymentDate?.ToString("yyyy-MM-dd")" />
+    <input type="date" name="toEmploymentDate"
+           value="@Model.Filter.ToEmploymentDate?.ToString("yyyy-MM-dd")" />
+
+    <input type="hidden" name="pageSize" value="@Model.Pagination.PageSize" />
+
+    <button type="submit" class="btn btn-primary">Search</button>
+    <a class="btn" asp-action="Index"
+       asp-route-pageSize="@Model.Pagination.PageSize">Reset</a>
+</form>
+
+@if (Model.Items.Count == 0)
+{
+    <p class="empty">There is no employees yet.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th class="col-avatar">Avatar</th>
+                <th>Name</th>
+                <th>Age</th>
+                <th>Speciality</th>
+                <th>Employment Date</th>
+                <th class="col-actions">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Items)
+            {
+                <tr>
+                    <td>
+                        @if (!string.IsNullOrEmpty(item.AvatarUrl))
+                        {
+                            <img src="@item.AvatarUrl" alt="@item.Name"
+                                 class="avatar" loading="lazy" />
+                        }
+                        else
+                        {
+                            <span class="avatar avatar-placeholder">@item.Name</span>
+                        }
+                    </td>
+                    <td>@item.Name</td>
+                    <td>@item.Age</td>
+                    <td>@item.Speciality</td>
+                    <td>@item.EmploymentDate.ToString("yyyy-MM-dd")</td>
+                    <td class="col-actions">
+                        <a class="btn btn-secondary btn-sm"
+                           asp-controller="Task" asp-action="Create" asp-route-employeeId="@item.Id">Add task</a>
+                        <a class="btn btn-secondary btn-sm"
+                           asp-action="Update" asp-route-id="@item.Id">Update</a>
+                        <a class="btn btn-danger btn-sm"
+                           asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <nav class="pagination">
+        @if (!isFirstPage)
+        {
+            <a class="btn" asp-action="Index"
+               asp-route-pageSize="@Model.Pagination.PageSize"
+               asp-route-name="@Model.Filter.Name"
+               asp-route-fromAge="@Model.Filter.FromAge"
+               asp-route-toAge="@Model.Filter.ToAge"
+               asp-route-speciality="@Model.Filter.Speciality"
+               asp-route-fromEmploymentDate="@Model.Filter.FromEmploymentDate?.ToString("yyyy-MM-dd")"
+               asp-route-toEmploymentDate="@Model.Filter.ToEmploymentDate?.ToString("yyyy-MM-dd")">← At the beginning</a>
+        }
+        else
+        {
+            <span class="pagination-spacer"></span>
+        }
+
+        @if (Model.NextCursor is not null)
+        {
+            <a class="btn btn-primary" asp-action="Index"
+               asp-route-cursor="@Model.NextCursor"
+               asp-route-pageSize="@Model.Pagination.PageSize"
+               asp-route-name="@Model.Filter.Name"
+               asp-route-fromAge="@Model.Filter.FromAge"
+               asp-route-toAge="@Model.Filter.ToAge"
+               asp-route-speciality="@Model.Filter.Speciality"
+               asp-route-fromEmploymentDate="@Model.Filter.FromEmploymentDate?.ToString("yyyy-MM-dd")"
+               asp-route-toEmploymentDate="@Model.Filter.ToEmploymentDate?.ToString("yyyy-MM-dd")">Next</a>
+        }
+    </nav>
+}

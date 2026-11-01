@@ -1,0 +1,48 @@
+﻿@using EmployeeService.Core.Enums
+@model TaskCreateViewModel
+
+@{
+    ViewData["Title"] = "Create task";
+}
+
+<h2>New task</h2>
+
+
+<form asp-action="Create" method="post" enctype="application/x-www-form-urlencoded" class="form">
+    <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
+
+    <input type="hidden" asp-for="EmployeeId" />
+
+
+    <div class="form-row">
+        <label asp-for="Name"></label>
+        <input asp-for="Name" />
+        <span asp-validation-for="Name" class="field-error"></span>
+    </div>
+
+    <div class="form-row">
+        <label asp-for="Description"></label>
+        <textarea asp-for="Description" rows="6" class="form-textarea"></textarea>
+        <span asp-validation-for="Description" class="field-error"></span>
+    </div>
+
+    <div class="form-row">
+        <label asp-for="TaskState"></label>
+        <select asp-for="TaskState">
+            <option value="">— Select state —</option>
+            @foreach (var state in Enum.GetValues<TaskState>())
+            {
+                if (state != TaskState.Unspecified)
+                {
+                    <option value="@state">@state</option>
+                }
+            }
+        </select>
+        <span asp-validation-for="TaskState" class="field-error"></span>
+    </div>
+
+    <div class="form-actions">
+        <button type="submit" class="btn btn-primary">Create</button>
+        <a class="btn" asp-controller="Employee" asp-action="Index">Cancel</a>
+    </div>
+</form>

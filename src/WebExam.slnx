@@ -1,0 +1,18 @@
+<Solution>
+  <Folder Name="/Services/" />
+  <Folder Name="/Services/AuthService/">
+    <Project Path="Services/AuthService/AuthService.Api/AuthService.Api.csproj" />
+    <Project Path="Services/AuthService/AuthService.Application/AuthService.Application.csproj" />
+    <Project Path="Services/AuthService/AuthService.Core/AuthService.Core.csproj" />
+    <Project Path="Services/AuthService/AuthService.Infrastructure/AuthService.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/Services/EmployeeService/">
+    <Project Path="Services/EmployeeService/EmployeeService.Api/EmployeeService.Api.csproj" />
+    <Project Path="Services/EmployeeService/EmployeeService.Application/EmployeeService.Application.csproj" />
+    <Project Path="Services/EmployeeService/EmployeeService.Core/EmployeeService.Core.csproj" />
+    <Project Path="Services/EmployeeService/EmployeeService.Infrastructure/EmployeeService.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/Services/Shared/">
+    <Project Path="Services/Shared/Shared/Shared.csproj" />
+  </Folder>
+</Solution>

@@ -1,0 +1,58 @@
+services:
+    employee_service:
+        build:
+            context: ./Services
+            dockerfile: ./EmployeeService/EmployeeService.Api/Dockerfile
+        ports:
+            - "5010:8080"
+        env_file:
+            - .env/employee_service.env
+        container_name: employee_service
+        depends_on:
+            employee_db:
+                condition: service_healthy
+        restart: unless-stopped
+
+    employee_db:
+        image: postgres:15
+        container_name: employee_db
+        restart: unless-stopped
+        ports:
+            - "5432:5432"
+        env_file:
+            - .env/employee_db.env
+        healthcheck:
+            test: ["CMD-SHELL", "pg_isready -U admin -d employee_db"]
+            interval: 10s
+            timeout: 5s
+            retries: 10
+            start_period: 30s
+
+    auth_service:
+        build:
+            context: ./Services
+            dockerfile: ./AuthService/AuthService.Api/Dockerfile
+        ports:
+            - "5020:8080"
+        env_file:
+            - .env/auth_service.env
+        container_name: auth_service
+        depends_on:
+            auth_db:
+                condition: service_healthy
+        restart: unless-stopped
+
+    auth_db:
+        image: postgres:15
+        container_name: auth_db
+        restart: unless-stopped
+        ports:
+            - "6543:5432"
+        env_file:
+            - .env/auth_db.env
+        healthcheck:
+            test: ["CMD-SHELL", "pg_isready -U admin -d auth_db"]
+            interval: 10s
+            timeout: 5s
+            retries: 10
+            start_period: 30s

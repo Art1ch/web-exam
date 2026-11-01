@@ -1,0 +1,48 @@
+﻿@model EmployeeCreateViewModel
+
+@{
+    ViewData["Title"] = "Create employee";
+
+    var today = DateOnly.FromDateTime(DateTime.UtcNow).ToString("yyyy-MM-dd");
+}
+
+<h2>New employee</h2>
+
+<form asp-action="Create" method="post" enctype="multipart/form-data" class="form">
+    <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
+
+    <div class="form-row">
+        <label asp-for="Name"></label>
+        <input asp-for="Name" />
+        <span asp-validation-for="Name" class="field-error"></span>
+    </div>
+
+    <div class="form-row">
+        <label asp-for="Age"></label>
+        <input asp-for="Age" type="number"/>
+        <span asp-validation-for="Age" class="field-error"></span>
+    </div>
+
+    <div class="form-row">
+        <label asp-for="Speciality"></label>
+        <input asp-for="Speciality" />
+        <span asp-validation-for="Speciality" class="field-error"></span>
+    </div>
+
+    <div class="form-row">
+        <label asp-for="EmploymentDate"></label>
+        <input asp-for="EmploymentDate" type="date" max="@today"/>
+        <span asp-validation-for="EmploymentDate" class="field-error"></span>
+    </div>
+
+    <div class="form-row">
+        <label asp-for="Avatar"></label>
+        <input asp-for="Avatar" type="file" accept="image/*" />
+        <span asp-validation-for="Avatar" class="field-error"></span>
+    </div>
+
+    <div class="form-actions">
+        <button type="submit" class="btn btn-primary">Create</button>
+        <a class="btn" asp-action="Index">Cancel</a>
+    </div>
+</form>

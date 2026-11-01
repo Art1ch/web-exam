@@ -1,0 +1,82 @@
+﻿@using EmployeeService.Core.Enums
+@model TaskIndexViewModel
+@{
+    ViewData["Title"] = "Tasks";
+    var isFirstPage = Model.Pagination.Cursor is null;
+}
+
+<form asp-action="Index" method="get" class="filters">
+    <input type="text" name="name" value="@Model.Filter.Name" placeholder="Name" />
+
+    <select name="taskState">
+        <option value="">— All states —</option>
+        @foreach (var state in Enum.GetValues<TaskState>())
+        {
+            if (state != TaskState.Unspecified)
+            {
+                <option value="@state" selected="@(Model.Filter.TaskState == state)">@state</option>
+            }
+        }
+    </select>
+
+    <input type="hidden" name="pageSize" value="@Model.Pagination.PageSize" />
+
+    <button type="submit" class="btn btn-primary">Search</button>
+    <a class="btn" asp-action="Index"
+       asp-route-pageSize="@Model.Pagination.PageSize">Reset</a>
+</form>
+
+@if (Model.Items.Count == 0)
+{
+    <p class="empty">There is no tasks yet.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Task state</th>
+                <th class="col-actions">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Items)
+            {
+                <tr>
+                    <td>@item.Name</td>
+                    <td>@item.TaskState</td>
+                    <td class="col-actions">
+                        <a class="btn btn-secondary btn-sm"
+                           asp-action="Update" asp-route-id="@item.Id">Update</a>
+                        <a class="btn btn-danger btn-sm"
+                           asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <nav class="pagination">
+        @if (!isFirstPage)
+        {
+            <a class="btn" asp-action="Index"
+               asp-route-pageSize="@Model.Pagination.PageSize"
+               asp-route-name="@Model.Filter.Name"
+               asp-route-taskState="@Model.Filter.TaskState">At the beginning</a>
+        }
+        else
+        {
+            <span class="pagination-spacer"></span>
+        }
+
+        @if (Model.NextCursor is not null)
+        {
+            <a class="btn btn-primary" asp-action="Index"
+               asp-route-cursor="@Model.NextCursor"
+               asp-route-pageSize="@Model.Pagination.PageSize"
+               asp-route-name="@Model.Filter.Name"
+               asp-route-taskState="@Model.Filter.TaskState">Next</a>
+        }
+    </nav>
+}
