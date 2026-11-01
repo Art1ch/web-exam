@@ -1,0 +1,20 @@
+﻿@model EmployeeDeleteViewModel
+@{
+    ViewData["Title"] = "Delete employee";
+}
+
+<h2>Delete employee</h2>
+
+<p>Are you sure you want to delete <strong>@Model.Name</strong>?</p>
+
+@if (!string.IsNullOrEmpty(Model.AvatarUrl))
+{
+    <img src="@Model.AvatarUrl" alt="@Model.Name" class="avatar" />
+}
+
+<form asp-action="DeleteConfirmed" asp-route-id="@Model.Id" method="post" class="form">
+    <div class="form-actions">
+        <button type="submit" class="btn btn-danger">Delete</button>
+        <a class="btn" asp-action="Index">Cancel</a>
+    </div>
+</form>

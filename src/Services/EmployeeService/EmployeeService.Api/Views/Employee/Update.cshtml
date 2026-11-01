@@ -1,0 +1,57 @@
+﻿@model EmployeeUpdateViewModel
+
+@{
+    ViewData["Title"] = "Update employee";
+
+    var today = DateOnly.FromDateTime(DateTime.UtcNow).ToString("yyyy-MM-dd");
+}
+
+<h2>Update employee</h2>
+
+<form asp-action="Update" asp-route-id="@Model.Id" method="post"
+      enctype="multipart/form-data" class="form">
+    <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
+
+    <input type="hidden" asp-for="Id" />
+    <input type="hidden" asp-for="AvatarUrl" />
+
+    @if (!string.IsNullOrEmpty(Model.AvatarUrl))
+    {
+        <img src="@Model.AvatarUrl" alt="@Model.Name" class="avatar" />
+    }
+
+    <div class="form-row">
+        <label asp-for="Name"></label>
+        <input asp-for="Name" />
+        <span asp-validation-for="Name" class="field-error"></span>
+    </div>
+
+    <div class="form-row">
+        <label asp-for="Age"></label>
+        <input asp-for="Age" type="number" min="16" max="100" />
+        <span asp-validation-for="Age" class="field-error"></span>
+    </div>
+
+    <div class="form-row">
+        <label asp-for="Speciality"></label>
+        <input asp-for="Speciality" />
+        <span asp-validation-for="Speciality" class="field-error"></span>
+    </div>
+
+    <div class="form-row">
+        <label asp-for="EmploymentDate"></label>
+        <input asp-for="EmploymentDate" type="date" max="@today"/>
+        <span asp-validation-for="EmploymentDate" class="field-error"></span>
+    </div>
+
+    <div class="form-row">
+        <label asp-for="NewAvatar"></label>
+        <input asp-for="NewAvatar" type="file" accept="image/*" />
+        <span asp-validation-for="NewAvatar" class="field-error"></span>
+    </div>
+
+    <div class="form-actions">
+        <button type="submit" class="btn btn-primary">Update</button>
+        <a class="btn" asp-action="Index">Cancel</a>
+    </div>
+</form>

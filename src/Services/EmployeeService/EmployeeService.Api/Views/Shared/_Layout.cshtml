@@ -1,0 +1,22 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewData["Title"] - MyCompany</title>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+    <header class="app-header">
+        <nav class="tabs">
+            <a class="tab @(ViewContext.RouteData.Values["controller"]?.ToString() == "Employee" ? "active" : "")"
+               asp-controller="Employee" asp-action="Index">Employees</a>
+            <a class="tab @(ViewContext.RouteData.Values["controller"]?.ToString() == "Task" ? "active" : "")"
+               asp-controller="Task" asp-action="Index">Tasks</a>
+        </nav>
+    </header>
+
+    <main class="app-main">
+        @RenderBody()
+    </main>
+</body>
+</html>
