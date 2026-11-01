@@ -10,38 +10,32 @@ namespace AuthService.Api.Controllers;
 
 [Route("api/v1/auth")]
 [ApiController]
-public class AuthController : ControllerBase
+public sealed class AuthController(
+    IMapper mapper,
+    ISender sender
+) : ControllerBase
 {
-    private readonly IMapper _mapper;
-    private readonly ISender _sender;
-
-    public AuthController(IMapper mapper, ISender sender)
-    {
-        _mapper = mapper;
-        _sender = sender;
-    }
-
     [HttpPost("register")]
     public async Task<ActionResult<RegisterResponse>> Register([FromBody] RegisterRequest request)
     {
-        var command = _mapper.Map<RegisterCommand>(request);
+        var command = mapper.Map<RegisterCommand>(request);
 
-        var commandResult = await _sender.Send(command);
+        var commandResult = await sender.Send(command);
 
-        var response = _mapper.Map<RegisterResponse>(commandResult);
+        var response = mapper.Map<RegisterResponse>(commandResult);
 
-        return response;
+        return Ok(response);
     }
 
     [HttpPost("login")]
     public async Task<ActionResult<LoginResponse>> Login([FromBody] LoginRequest request)
     {
-        var command = _mapper.Map<LoginCommand>(request);
+        var command = mapper.Map<LoginCommand>(request);
 
-        var commandResult = await _sender.Send(command);
+        var commandResult = await sender.Send(command);
 
-        var response = _mapper.Map<LoginResponse>(commandResult);
+        var response = mapper.Map<LoginResponse>(commandResult);
 
-        return response;
+        return Ok(response);
     }
 }

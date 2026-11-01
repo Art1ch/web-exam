@@ -15,74 +15,66 @@ namespace EmployeeService.Api.Controllers;
 [Authorize]
 [Route("api/v1/employees")]
 [ApiController]
-public class EmployeeApiController : ControllerBase
+public sealed class EmployeeApiController(
+    IMapper mapper,
+    ISender sender
+) : ControllerBase
 {
-    private readonly IMapper _mapper;
-    private readonly ISender _sender;
-
-    public EmployeeApiController(IMapper mapper, ISender sender)
-    {
-        _mapper = mapper;
-        _sender = sender;
-    }
-
     [HttpGet("{id:int}")]
     public async Task<ActionResult<GetEmployeeResponse>> Get([FromRoute] int id)
     {
         var query = new GetEmployeeQuery(id);
 
-        var queryResult = await _sender.Send(query);
+        var queryResult = await sender.Send(query);
 
-        var response = _mapper.Map<GetEmployeeResponse>(queryResult);
+        var response = mapper.Map<GetEmployeeResponse>(queryResult);
 
-        return response;
+        return Ok(response);
     }
 
     [HttpGet]
     public async Task<ActionResult<GetEmployeeEntitiesResponse>> GetEntities([FromQuery] GetEmployeeEntitiesRequest request)
     {
-        var query = _mapper.Map<GetEmployeeEntitiesQuery>(request);
+        var query = mapper.Map<GetEmployeeEntitiesQuery>(request);
 
-        var queryResult = await _sender.Send(query);
+        var queryResult = await sender.Send(query);
 
-        var response = _mapper.Map<GetEmployeeEntitiesResponse>(queryResult);
+        var response = mapper.Map<GetEmployeeEntitiesResponse>(queryResult);
 
-        return response;
+        return Ok(response);
     }
 
-    [HttpPost("create")]
+    [HttpPost]
     public async Task<ActionResult<CreateEmployeeResponse>> Create([FromBody] CreateEmployeeRequest request)
     {
-        var command = _mapper.Map<CreateEmployeeCommand>(request);
+        var command = mapper.Map<CreateEmployeeCommand>(request);
 
-        var commandResult = await _sender.Send(command);
+        var commandResult = await sender.Send(command);
 
-        var response = _mapper.Map<CreateEmployeeResponse>(commandResult);
+        var response = mapper.Map<CreateEmployeeResponse>(commandResult);
 
-        return response;
+        return Ok(response);
     }
 
-    [HttpPatch("{id:int}/update")]
+    [HttpPatch("{id:int}")]
     public async Task<ActionResult<UpdateEmployeeResponse>> Update(int id, [FromBody] UpdateEmployeeRequest request)
     {
-        var command = _mapper.Map<UpdateEmployeeCommand>(request) with { Id = id};
+        var command = mapper.Map<UpdateEmployeeCommand>(request) with { Id = id};
 
-        var commandResult = await _sender.Send(command);
+        var commandResult = await sender.Send(command);
 
-        var response = _mapper.Map<UpdateEmployeeResponse>(commandResult);
+        var response = mapper.Map<UpdateEmployeeResponse>(commandResult);
 
-        return response;
+        return Ok(response);
     }
 
-    [HttpDelete("{id:int}/delete")]
+    [HttpDelete("{id:int}")]
     public async Task<ActionResult<DeleteEmployeeResponse>> Delete([FromRoute] int id)
     {
         var command = new DeleteEmployeeCommand(id);
 
-        var commandResult = await _sender.Send(command);
+        var commandResult = await sender.Send(command);
 
-        var response = _mapper.Map<DeleteEmployeeResponse>(commandResult);
-
-        return response;
+        return NoContent();
     }
 }

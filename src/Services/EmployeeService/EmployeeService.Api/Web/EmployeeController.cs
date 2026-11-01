@@ -13,17 +13,11 @@ using Microsoft.AspNetCore.Mvc;
 namespace EmployeeService.Api.Web;
 
 [Route("employees")]
-public sealed class EmployeeController : Controller
+public sealed class EmployeeController(
+    IMapper mapper,
+    ISender sender
+) : Controller
 {
-    private readonly ISender _sender;
-    private readonly IMapper _mapper;
-
-    public EmployeeController(ISender sender, IMapper mapper)
-    {
-        _sender = sender;
-        _mapper = mapper;
-    }
-
     [HttpGet("")]
     public async Task<IActionResult> Index(
         PaginationParams paginationParams,
@@ -32,9 +26,9 @@ public sealed class EmployeeController : Controller
     {
         var query = new GetEmployeeEntitiesQuery(paginationParams, employeeFilter);
 
-        var queryResult = await _sender.Send(query);
+        var queryResult = await sender.Send(query);
 
-        var model = _mapper.Map<EmployeeIndexViewModel>(queryResult);
+        var model = mapper.Map<EmployeeIndexViewModel>(queryResult);
 
         model.Filter = employeeFilter;
         model.Pagination = paginationParams;  
@@ -55,9 +49,9 @@ public sealed class EmployeeController : Controller
         if (!ModelState.IsValid)
             return View(model);
 
-        var command = _mapper.Map<CreateEmployeeCommand>(model);
+        var command = mapper.Map<CreateEmployeeCommand>(model);
 
-        await _sender.Send(command);
+        await sender.Send(command);
 
         return RedirectToAction(nameof(Index));
     }
@@ -67,9 +61,9 @@ public sealed class EmployeeController : Controller
     {
         var query = new GetEmployeeQuery(id);
 
-        var queryResult = await _sender.Send(query);
+        var queryResult = await sender.Send(query);
 
-        var model = _mapper.Map<EmployeeUpdateViewModel>(queryResult);
+        var model = mapper.Map<EmployeeUpdateViewModel>(queryResult);
 
         return View(model);
     }
@@ -84,9 +78,9 @@ public sealed class EmployeeController : Controller
         if (!ModelState.IsValid)
             return View(model);
 
-        var command = _mapper.Map<UpdateEmployeeCommand>(model);
+        var command = mapper.Map<UpdateEmployeeCommand>(model);
 
-        await _sender.Send(command);
+        await sender.Send(command);
 
         return RedirectToAction(nameof(Index));
     }
@@ -96,9 +90,9 @@ public sealed class EmployeeController : Controller
     {
         var query = new GetEmployeeQuery(id);
 
-        var queryResult = await _sender.Send(query);
+        var queryResult = await sender.Send(query);
 
-        var model = _mapper.Map<EmployeeDeleteViewModel>(queryResult);
+        var model = mapper.Map<EmployeeDeleteViewModel>(queryResult);
 
         return View(model);
     }
@@ -109,7 +103,7 @@ public sealed class EmployeeController : Controller
     {
         var command = new DeleteEmployeeCommand(id);
 
-        await _sender.Send(command);
+        await sender.Send(command);
 
         return RedirectToAction(nameof(Index));
     }

@@ -6,33 +6,22 @@ using MediatR;
 
 namespace EmployeeService.Application.Commands.Employee.Create;
 
-internal sealed class CreateEmployeeCommandHandler : IRequestHandler<CreateEmployeeCommand, CreateEmployeeCommandResult>
+internal sealed class CreateEmployeeCommandHandler(
+    IEmployeeRepository employeeRepository,
+    IMapper mapper,
+    IAvatarService avatarService
+) : IRequestHandler<CreateEmployeeCommand, CreateEmployeeCommandResult>
 {
-    private readonly IEmployeeRepository _employeeRepository;
-    private readonly IMapper _mapper;
-    private readonly IAvatarService _avatarService;
-
-    public CreateEmployeeCommandHandler(
-        IEmployeeRepository employeeRepository,
-        IMapper mapper,
-        IAvatarService avatarService
-    )
-    {
-        _employeeRepository = employeeRepository;
-        _mapper = mapper;
-        _avatarService = avatarService;
-    }
-
     public async Task<CreateEmployeeCommandResult> Handle(CreateEmployeeCommand request, CancellationToken cancellationToken)
     {
-        var entity = _mapper.Map<EmployeeEntity>(request);
+        var entity = mapper.Map<EmployeeEntity>(request);
 
         if (request.Avatar != null)
         {
-            entity.AvatarUrl = await _avatarService.UploadAvatarAsync(request.Avatar, cancellationToken);
+            entity.AvatarUrl = await avatarService.UploadAvatarAsync(request.Avatar, cancellationToken);
         }
 
-        await _employeeRepository.CreateAsync(entity, cancellationToken);
+        await employeeRepository.CreateAsync(entity, cancellationToken);
 
         return new CreateEmployeeCommandResult();
     }

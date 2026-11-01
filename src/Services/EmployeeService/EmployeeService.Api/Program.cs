@@ -26,6 +26,7 @@ public class Program
         {
             app.UseExceptionHandler("/Home/Error");
             app.UseHsts();
+            app.MapOpenApi();
         }
 
         app.UseRouting();

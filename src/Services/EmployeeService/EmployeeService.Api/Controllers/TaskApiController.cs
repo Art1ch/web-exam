@@ -15,25 +15,19 @@ namespace EmployeeService.Api.Controllers;
 [Authorize]
 [Route("api/v1/tasks")]
 [ApiController]
-public class TaskApiController : ControllerBase
+public sealed class TaskApiController(
+    IMapper mapper,
+    ISender sender
+) : ControllerBase
 {
-    private readonly IMapper _mapper;
-    private readonly ISender _sender;
-
-    public TaskApiController(IMapper mapper, ISender sender)
-    {
-        _mapper = mapper;
-        _sender = sender;
-    }
-
     [HttpGet("{id:int}")]
     public async Task<ActionResult<GetTaskResponse>> Get([FromRoute] int id)
     {
         var query = new GetTaskQuery(id);
 
-        var queryResult = await _sender.Send(query);
+        var queryResult = await sender.Send(query);
 
-        var response = _mapper.Map<GetTaskResponse>(queryResult);
+        var response = mapper.Map<GetTaskResponse>(queryResult);
 
         return response;
     }
@@ -41,48 +35,46 @@ public class TaskApiController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<GetTaskEntitiesResponse>> GetEntities([FromQuery] GetTaskEntitiesRequest request)
     {
-        var query = _mapper.Map<GetTaskEntitiesQuery>(request);
+        var query = mapper.Map<GetTaskEntitiesQuery>(request);
 
-        var queryResult = await _sender.Send(query);
+        var queryResult = await sender.Send(query);
 
-        var response = _mapper.Map<GetTaskEntitiesResponse>(queryResult);
+        var response = mapper.Map<GetTaskEntitiesResponse>(queryResult);
 
         return response;
     }
 
-    [HttpPost("create")]
+    [HttpPost]
     public async Task<ActionResult<CreateTaskResponse>> Create([FromBody] CreateTaskRequest request)
     {
-        var command = _mapper.Map<CreateTaskCommand>(request);
+        var command = mapper.Map<CreateTaskCommand>(request);
 
-        var commandResult = await _sender.Send(command);
+        var commandResult = await sender.Send(command);
 
-        var response = _mapper.Map<CreateTaskResponse>(commandResult);
+        var response = mapper.Map<CreateTaskResponse>(commandResult);
 
         return response;
     }
 
-    [HttpPatch("{id:int}/update")]
+    [HttpPatch("{id:int}")]
     public async Task<ActionResult<UpdateTaskResponse>> Update(int id, [FromBody] UpdateTaskRequest request)
     {
-        var command = _mapper.Map<UpdateTaskCommand>(request) with { Id = id };
+        var command = mapper.Map<UpdateTaskCommand>(request) with { Id = id };
 
-        var commandResult = await _sender.Send(command);
+        var commandResult = await sender.Send(command);
 
-        var response = _mapper.Map<UpdateTaskResponse>(commandResult);
+        var response = mapper.Map<UpdateTaskResponse>(commandResult);
 
         return response;
     }
 
-    [HttpDelete("{id:int}/delete")]
+    [HttpDelete("{id:int")]
     public async Task<ActionResult<DeleteTaskResponse>> Delete([FromRoute] int id)
     {
         var command = new DeleteTaskCommand(id);
 
-        var commandResult = await _sender.Send(command);
+        var commandResult = await sender.Send(command);
 
-        var response = _mapper.Map<DeleteTaskResponse>(commandResult);
-
-        return response;
+        return NoContent();
     }
 }

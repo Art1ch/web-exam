@@ -13,17 +13,11 @@ using Microsoft.AspNetCore.Mvc;
 namespace EmployeeService.Api.Web;
 
 [Route("tasks")]
-public sealed class TaskController : Controller
+public sealed class TaskController(
+    IMapper mapper,
+    ISender sender
+) : Controller
 {
-    private readonly ISender _sender;
-    private readonly IMapper _mapper;
-
-    public TaskController(ISender sender, IMapper mapper)
-    {
-        _sender = sender;
-        _mapper = mapper;
-    }
-
     [HttpGet("")]
     public async Task<IActionResult> Index(
         PaginationParams paginationParams,
@@ -32,9 +26,9 @@ public sealed class TaskController : Controller
     {
         var query = new GetTaskEntitiesQuery(taskFilter, paginationParams);
 
-        var queryResult = await _sender.Send(query);
+        var queryResult = await sender.Send(query);
 
-        var model = _mapper.Map<TaskIndexViewModel>(queryResult);
+        var model = mapper.Map<TaskIndexViewModel>(queryResult);
 
         model.Filter = taskFilter;
         model.Pagination = paginationParams;
@@ -58,9 +52,9 @@ public sealed class TaskController : Controller
         if (!ModelState.IsValid)
             return View(model);
 
-        var command = _mapper.Map<CreateTaskCommand>(model);
+        var command = mapper.Map<CreateTaskCommand>(model);
 
-        await _sender.Send(command);
+        await sender.Send(command);
 
         return RedirectToAction(nameof(Index));
     }
@@ -70,9 +64,9 @@ public sealed class TaskController : Controller
     {
         var query = new GetTaskQuery(id);
 
-        var queryResult = await _sender.Send(query);
+        var queryResult = await sender.Send(query);
 
-        var model = _mapper.Map<TaskUpdateViewModel>(queryResult);
+        var model = mapper.Map<TaskUpdateViewModel>(queryResult);
 
         return View(model);
     }
@@ -87,9 +81,9 @@ public sealed class TaskController : Controller
         if (!ModelState.IsValid)
             return View(model);
 
-        var command = _mapper.Map<UpdateTaskCommand>(model);
+        var command = mapper.Map<UpdateTaskCommand>(model);
 
-        await _sender.Send(command);
+        await sender.Send(command);
 
         return RedirectToAction(nameof(Index));
     }
@@ -99,9 +93,9 @@ public sealed class TaskController : Controller
     {
         var query = new GetTaskQuery(id);
 
-        var queryResult = await _sender.Send(query);
+        var queryResult = await sender.Send(query);
 
-        var model = _mapper.Map<TaskDeleteViewModel>(queryResult);
+        var model = mapper.Map<TaskDeleteViewModel>(queryResult);
 
         return View(model);
     }
@@ -112,7 +106,7 @@ public sealed class TaskController : Controller
     {
         var command = new DeleteTaskCommand(id);
 
-        await _sender.Send(command);
+        await sender.Send(command);
 
         return RedirectToAction(nameof(Index));
     }

@@ -5,22 +5,16 @@ using MediatR;
 
 namespace EmployeeService.Application.Commands.Task.Update;
 
-internal sealed class UpdateTaskCommandHandler : IRequestHandler<UpdateTaskCommand, UpdateTaskCommandResult>
+internal sealed class UpdateTaskCommandHandler(
+    ITaskRepository taskRepository,
+    IMapper mapper
+) : IRequestHandler<UpdateTaskCommand, UpdateTaskCommandResult>
 {
-    private readonly ITaskRepository _taskRepository;
-    private readonly IMapper _mapper;
-
-    public UpdateTaskCommandHandler(ITaskRepository taskRepository, IMapper mapper)
-    {
-        _taskRepository = taskRepository;
-        _mapper = mapper;
-    }
-
     public async Task<UpdateTaskCommandResult> Handle(UpdateTaskCommand request, CancellationToken cancellationToken)
     {
-        var entity = _mapper.Map<TaskEntity>(request);
+        var entity = mapper.Map<TaskEntity>(request);
 
-        await _taskRepository.UpdateAsync(entity, cancellationToken);
+        await taskRepository.UpdateAsync(entity, cancellationToken);
 
         return new UpdateTaskCommandResult();
     }
